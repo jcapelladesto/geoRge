@@ -1,5 +1,5 @@
 PuInc <- function (XCMSet=NULL,ULtag=NULL,Ltag=NULL,separator=NULL,sep.pos=NULL, fc.threshold=1.2, p.value.threshold=0.05,
-PuInc.int.lim=5000){
+PuInc.int.lim=5000,...){
 
 
 XCMSet <- xset3
