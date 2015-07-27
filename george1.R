@@ -17,11 +17,11 @@ classv <- as.factor(XCMSet@phenoData$class) # sample classes (use separate folde
 ##' This part could be improved forcing the user to use factor vectors. 
 ##' Any suggestions are welcome. 
 
-conditions <- sapply(levels(classv),USE.NAMES=F,function(x) {
+conditions <- sapply(levels(classv), USE.NAMES=F, function(x) {
 	if (sep.pos=="f") {
-	a <- strsplit(x,split=paste(ULtag,separator,sep=""))[[1]][2]
+	a <- strsplit(x, split = paste(ULtag, separator, sep=""))[[1]][2]
 	} else {
-	a <- strsplit(x,split=paste(separator,ULtag,sep=""))[[1]][1]
+	a <- strsplit(x, split  =paste(separator, ULtag, sep=""))[[1]][1]
 	}
 	return (a)
 })
@@ -29,18 +29,18 @@ conditions <- unique(conditions[-which(is.na(conditions))])
 
 filtsamps <- 1:ncol(D1)
 
-meanintensities <- apply(D1, 2, function(x) tapply(x, classv,mean))
-meanintensities <- meanintensities[grep(ULtag,rownames(meanintensities)),]
+meanintensities <- apply(D1, 2, function(x) tapply(x, classv, mean))
+meanintensities <- meanintensities[grep(ULtag, rownames(meanintensities)), ]
 filtsampsint <- filtsamps[apply(meanintensities, 2, function(x) all(x<PuInc.int.lim))]
 
 #### First step: Compare Labelled vs Unlabelled ####
 
 # Welch's test
-pvalues <- sapply(conditions,function(y) {
-  apply(D1[,filtsampsint],2,function (x) {
-    a <- try(t.test(x[which(classv==paste(ULtag,y,sep=separator))],
-                    x[which(classv==paste(Ltag,y,sep=separator))],var.equal=F)$p.value,silent=T)
-    if (is(a,"try-error")|is.na(a)) {a <- 1}
+pvalues <- sapply(conditions, function(y) {
+  apply(D1[ ,filtsampsint], 2, function (x) {
+    a <- try(t.test(x[which(classv == paste(ULtag, y, sep=separator))],
+                    x[which(classv == paste(Ltag ,y, sep=separator))], var.equal=F)$p.value, silent=T)
+    if (is(a, "try-error")|is.na(a)) {a <- 1}
     return(a)
   })
 })
@@ -48,10 +48,10 @@ pvalues <- data.frame(pvalues)
 colnames(pvalues) <- conditions
 
 # Fold change (This fold-change calculation is not commonly used*)
-fc.test <- sapply(conditions,function(y) {
-  apply(D1[,filtsampsint],2,function (x) { 
-    ulm <- mean(x[which(classv==paste(ULtag,y,sep=separator))])
-    labm <- mean(x[which(classv==paste(Ltag,y,sep=separator))]) 
+fc.test <- sapply(conditions, function(y) {
+  apply(D1[ ,filtsampsint], 2, function (x) { 
+    ulm <- mean(x[which(classv == paste(ULtag, y, sep=separator))])
+    labm <- mean(x[which(classv == paste(Ltag, y, sep=separator))]) 
     FC <- labm/ulm
     FC2 <- (-(ulm/labm))
     FC[FC<1] <- FC2[FC<1]
@@ -69,14 +69,14 @@ colnames(fc.test) <- conditions
 # the incorporation was detected
 
 compinc <- sapply(1:nrow(pvalues),function(x) {
-  t <- which(pvalues[x, ]<p.value.threshold)
-  t2 <- which(fc.test[x, ]>fc.threshold)
-  if (length(t)==0|length(t2)==0) {
+  t <- which(pvalues[x, ] < p.value.threshold)
+  t2 <- which(fc.test[x, ] > fc.threshold)
+  if (length(t) == 0 | length(t2) == 0) {
   	return()
   } else {
   	t <- t[is.element(t, t2)]
-  if (ncol(pvalues)==1) { #If only condition is given
-  	if (length(t)>0) {
+  if (ncol(pvalues) == 1) { #If only condition is given
+  	if (length(t) > 0) {
   	return(conditions)
   	} else {
   	return()
@@ -87,12 +87,12 @@ compinc <- sapply(1:nrow(pvalues),function(x) {
 }
 })
 
-compinc <- lapply(1:length(compinc),function(x)paste(compinc[[x]],collapse=";"))
+compinc <- lapply(1:length(compinc), function(x) paste(compinc[[x]], collapse=";"))
 compinc <- unlist(compinc)
 names(compinc) <- colnames(D1[ ,filtsampsint])
-compinc  <- compinc[which(compinc!="")]
+compinc  <- compinc[which(compinc != "")]
 
-res_inc <- XCMSet@groups[as.numeric(names(compinc)),c("mzmed","rtmed","rtmin","rtmax")]
+res_inc <- XCMSet@groups[as.numeric(names(compinc)),c("mzmed", "rtmed", "rtmin", "rtmax")]
 rownames(res_inc) <- 1:nrow(res_inc)
 
 return(
@@ -104,13 +104,16 @@ list(
 )
 }
 
-basepeak_finder <- function(XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL, fc.threshold=1.2, p.value.threshold=0.05,
+basepeak_finder <- function(PuIncR=NULL, XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL, fc.threshold=1.2, p.value.threshold=0.05,
 PuInc.int.lim=5000, UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, Basepeak.minInt=NULL, BP.Percentage=0.7, noise.quant=0.2,  ...) {
 
 X1 <- groupval(XCMSet, value = "maxo") # geoRge has only been used on "maxo". I suppose it works for others too.
 D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 filtsamps <- 1:ncol(D1)
+
+res_inc <- PuIncR[["PuInc"]]
+compinc <- PuIncR[["PuInc_conditions"]]
 
 #### Second step: Seek the base peaks for each putative incorporation ####
 
@@ -134,7 +137,7 @@ max_atoms <- function(mass,uatommass) {
 	floor((mass/uatommass))
 }
 
-xgroup <- cbind(XCMSet@groups[filtsamps,c("mzmed","rtmed")],t(D1)) 
+xgroup <- cbind(XCMSet@groups[filtsamps,c("mzmed", "rtmed")],t(D1)) 
 
 mass_diff <- L.atomM - UL.atomM
 
@@ -143,10 +146,10 @@ Xn <- groupval(XCMSet, value = "sn")
 Dn <- data.frame(t(Xn))
 Dn <- Dn[rownames(D1), ]
 colnames(Dn) <- as.character(1:ncol(Dn))
-meannoise <- apply(Dn, 2, function(x) tapply(x, classv,mean))
+meannoise <- apply(Dn, 2, function(x) tapply(x, classv, mean))
 meannoise[is.na(meannoise)] <- 3 
 mn <- quantile(meannoise, noise.quant, na.rm=T) 
-filtsampsnoise  <- which(apply(meannoise, 2, function(x) any(x>mn))==T)
+filtsampsnoise  <- which(apply(meannoise, 2, function(x) any(x > mn))==T)
 
 george <- lapply(rownames(res_inc),function(y) {
 	
