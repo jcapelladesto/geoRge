@@ -323,6 +323,8 @@ conditions <- sapply(levels(classv), USE.NAMES=F, function(x) {
 })
 conditions <- unique(conditions[-which(is.na(conditions))])
 
+mass_diff <- L.atomM - UL.atomM
+
 percent.incorp <- lapply(unique(georgedf$inc_id),function(y){
 	
 	inc_id_features <- georgedf[which(georgedf$inc_id==y),] 
