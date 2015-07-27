@@ -317,7 +317,7 @@ conditions <- sapply(levels(classv), USE.NAMES=F, function(x) {
 	if (sep.pos=="f") {
 	a <- strsplit(x, split = paste(ULtag, separator, sep=""))[[1]][2]
 	} else {
-	a <- strsplit(x, split  =paste(separator, ULtag, sep=""))[[1]][1]
+	a <- strsplit(x, split = paste(separator, ULtag, sep=""))[[1]][1]
 	}
 	return (a)
 })
@@ -411,7 +411,7 @@ percent.incorp <- lapply(unique(georgedf$inc_id),function(y){
 	})
 	
 	comp <- sapply(1:nrow(pvals),function(x) {
-		t <- which(pvals [x, ] < .value.vs.Control)
+		t <- which(pvals [x, ] < p.value.vs.Control)
 		if(length(t) == 0) {
 		t <- ""
 		return(t)
