@@ -386,12 +386,12 @@ percent.incorp <- lapply(unique(georgedf$inc_id),function(y){
 	})
 	colnames(sd_inc) <- paste0(colnames(sd_inc),"_SD")
 	
-	noncontrol <- setdiff(conditions,control)
+	noncontrol <- setdiff(conditions,control.cond)
 	
 	pvals <- sapply(noncontrol,function (x){
 		sapply(atoms,function(y){
 			a <- try(t.test(inc_percent[which(rownames(inc_percent)==y),which(conditions==x)],
-					inc_percent[which(rownames(inc_percent)==y),which(conditions==control)],
+					inc_percent[which(rownames(inc_percent)==y),which(conditions==control.cond)],
 					var.equal=T)$p.value,silent=T)
 			if(is(a,"try-error")){a <- 1}
 			return(a)
@@ -401,7 +401,7 @@ percent.incorp <- lapply(unique(georgedf$inc_id),function(y){
 	fct <- sapply(noncontrol,simplify=T,function (x){
 		sapply(1:nrow(mean_inc),function(y){ 
 			case <- mean_inc[y,which(conditions==x)]
-			control <- mean_inc[y,which(conditions==control)]
+			control <- mean_inc[y,which(conditions==control.cond)]
 			FC <- case/control;
 			FC2 <- (-(control/case))
 			FC[FC<1] <- FC2[FC<1]
