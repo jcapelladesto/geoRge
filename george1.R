@@ -302,7 +302,7 @@ return(georgedf)
 
 #### Calculate the percentage of incorporation and compare it versus a "control" condition for each "inc_id" ####
 label_compare <- function(geoRgeR=NULL, PuIncR=NULL, XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
-UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, control.cond=NULL, fc.vs.Control=1, p.value.vs.Control=0.05, Show.bp= T) {
+UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, control.cond=NULL, fc.vs.Control=1, p.value.vs.Control=0.05, Show.bp= T, ...) {
 
 georgedf <- geoRgeR
 
