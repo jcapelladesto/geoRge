@@ -1,7 +1,7 @@
-PuInc_seeker <- function (XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL, fc.threshold=1.2, 
+PuInc_seeker <- function (XCMSet=NULL, XCMSmode="maxo", ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL, fc.threshold=1.2, 
 p.value.threshold=0.05, PuInc.int.lim=5000, ...){
 
-X1 <- groupval(XCMSet, value = "maxo") # geoRge has only been used on "maxo". I suppose it works for others too.
+X1 <- groupval(XCMSet, value = XCMSmode) # geoRge has only been used on "maxo". I suppose it works for others too.
 D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 
@@ -104,10 +104,10 @@ list(
 )
 }
 
-basepeak_finder <- function(PuIncR=NULL, XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
+basepeak_finder <- function(PuIncR=NULL, XCMSmode="maxo", XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
 UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, Basepeak.minInt=NULL, BP.Percentage=0.7, noise.quant=0.2,  ...) {
 
-X1 <- groupval(XCMSet, value = "maxo") # geoRge has only been used on "maxo". I suppose it works for others too.
+X1 <- groupval(XCMSet, value = XCMSmode) # geoRge has only been used on "maxo". I suppose it works for others too.
 D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 filtsamps <- 1:ncol(D1)
@@ -301,12 +301,12 @@ return(georgedf)
 
 
 #### Calculate the percentage of incorporation and compare it versus a "control" condition for each "inc_id" ####
-label_compare <- function(geoRgeR=NULL, PuIncR=NULL, XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
+label_compare <- function(geoRgeR=NULL, XCMSmode="maxo", PuIncR=NULL, XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
 UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, control.cond=NULL, fc.vs.Control=1, p.value.vs.Control=0.05, Show.bp= T, ...) {
 
 georgedf <- geoRgeR
 
-X1 <- groupval(XCMSet, value = "maxo") # geoRge has only been used on "maxo". I suppose it works for others too.
+X1 <- groupval(XCMSet, value = XCMSmode) # geoRge has only been used on "maxo". I suppose it works for others too.
 D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 filtsamps <- 1:ncol(D1)
