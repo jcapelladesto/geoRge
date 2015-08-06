@@ -17,15 +17,12 @@ classv <- as.factor(XCMSet@phenoData$class) # sample classes (use separate folde
 ##' This part could be improved forcing the user to use factor vectors. 
 ##' Any suggestions are welcome. 
 
-conditions <- sapply(levels(classv), USE.NAMES=F, function(x) {
-	if (sep.pos == "f") {
-	a <- strsplit(x, split = paste(ULtag, separator, sep=""))[[1]][2]
-	} else {
-	a <- strsplit(x, split = paste(separator, ULtag, sep=""))[[1]][1]
-	}
-	return (a)
-})
-conditions <- unique(conditions[-which(is.na(conditions))])
+conditions <- levels(classv)
+if(sep.pos=="f"){
+	conditions <- gsub(paste(ULtag,separator,sep=""),"",conditions)[-grep(paste(Ltag,separator,sep=""),conditions)]
+	}else{
+	conditions <- gsub(paste(separator,ULtag,sep=""),"",conditions)[-grep(paste(separator,Ltag,sep=""),conditions)]
+}
 
 filtsamps <- 1:ncol(D1)
 
@@ -38,8 +35,8 @@ filtsampsint <- filtsamps[apply(meanintensities, 2, function(x) all(x < PuInc.in
 # Welch's test
 pvalues <- sapply(conditions, function(y) {
   apply(D1[ ,filtsampsint], 2, function (x) {
-    a <- try(t.test(x[which(classv == paste(ULtag, y, sep=separator))],
-                    x[which(classv == paste(Ltag, y, sep=separator))], var.equal=F)$p.value, silent=T)
+    a <- try(t.test(x[intersect(grep(ULtag,classv),grep(y,classv))],
+                    x[intersect(grep(Ltag,classv),grep(y,classv))], var.equal=F)$p.value, silent=T)
     if (is(a, "try-error")|is.na(a)) {a <- 1}
     return(a)
   })
@@ -50,8 +47,8 @@ colnames(pvalues) <- conditions
 # Fold change (This fold-change calculation is not commonly used*)
 fc.test <- sapply(conditions, function(y) {
   apply(D1[ ,filtsampsint], 2, function (x) { 
-    ulm <- mean(x[which(classv == paste(ULtag, y, sep=separator))])
-    labm <- mean(x[which(classv == paste(Ltag, y, sep=separator))]) 
+    ulm <- mean(x[intersect(grep(ULtag,classv),grep(y,classv))])
+    labm <- mean(x[intersect(grep(Ltag,classv),grep(y,classv))]) 
     FC <- labm/ulm
     FC2 <- (-(ulm/labm))
     FC[FC<1] <- FC2[FC<1]
@@ -101,7 +98,7 @@ list("PuInc"=res_inc, "PuInc_conditions"=compinc, "pvalue"=pvalues, "foldchange"
 }
 
 basepeak_finder <- function(PuIncR=NULL, XCMSmode="maxo", XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
-UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, Basepeak.minInt=NULL, BP.Percentage=0.7, noise.quant=0.2,  ...) {
+UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, Basepeak.minInt=NULL, Basepeak.Percentage=0.7, noise.quant=0.2,  ...) {
 
 X1 <- groupval(XCMSet, value = XCMSmode) # geoRge has only been used on "maxo". I suppose it works for others too.
 D1 <- data.frame(t(X1))
@@ -214,7 +211,7 @@ george <- lapply(rownames(res_inc), function(y) {
 				mi12 <- mi12[grep(x, rownames(mi12)), ]
 				if (any(mi12 > Basepeak.minInt)) {
 					mi12 <- mi12[which(mi12 > Basepeak.minInt)]
-					pos <- names(which(mi12 > (BP.Percentage*max(mi12))))
+					pos <- names(which(mi12 > (Basepeak.Percentage*max(mi12))))
 					return(pos)
 				} else {
 					return()
@@ -353,8 +350,8 @@ percent.incorp <- lapply(unique(georgedf$inc_id), function(y) {
 	all_id_int <- all_id[ ,3:ncol(all_id)] # intensities
 	
 	inc_percent <- sapply(conditions,function(x){
-		inc_id_intL <- inc_id_int[ ,grep(paste(Ltag,x,sep=separator), colnames(inc_id_int))]
-		all_id_intL <- all_id_int[ ,grep(paste(Ltag,x,sep=separator), colnames(all_id_int))]
+		inc_id_intL <- inc_id_int[,intersect(grep(Ltag,colnames(inc_id_int)),grep(x,colnames(inc_id_int)))]
+		all_id_intL <- all_id_int[,intersect(grep(Ltag,colnames(all_id_int)),grep(x,colnames(all_id_int)))]
 		
 		inc_cal <- sapply(1:ncol(inc_id_intL), function(x) {(inc_id_intL[ ,x] / sum(all_id_intL[ ,x]))*100})
 		return(inc_cal)
