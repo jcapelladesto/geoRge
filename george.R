@@ -1,11 +1,11 @@
 PuInc_seeker <- function (XCMSet=NULL, XCMSmode="maxo", ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL, fc.threshold=1.2, 
 p.value.threshold=0.05, PuInc.int.lim=5000, ...){
 
-X1 <- groupval(XCMSet, value = XCMSmode) # geoRge has only been used on "maxo". I suppose it works for others too.
+X1 <- groupval(XCMSet, value = XCMSmode) # geoRge has only been tested on "maxo".
 D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 
-classv <- as.factor(XCMSet@phenoData$class) # sample classes (use separate folders per group when running XCMS)
+classv <- as.factor(XCMSet@phenoData$class) # sample classes (use separate folders per each group when running XCMS)
 
 ##' This is a way to extract the condition classes automatically from the phenoData vector
 ##' 
