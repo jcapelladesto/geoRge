@@ -304,17 +304,15 @@ D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 filtsamps <- 1:ncol(D1)
 classv <- as.factor(XCMSet@phenoData$class) # sample classes (use separate folders per group when running XCMS)
-xgroup <- cbind(XCMSet@groups[filtsamps,c("mzmed", "rtmed")], t(D1)) 
+xgroup <- cbind(XCMSet@groups[filtsamps,c("mzmed", "rtmed")], t(D1))
 
-conditions <- sapply(levels(classv), USE.NAMES=F, function(x) {
-	if (sep.pos=="f") {
-	a <- strsplit(x, split = paste(ULtag, separator, sep=""))[[1]][2]
-	} else {
-	a <- strsplit(x, split = paste(separator, ULtag, sep=""))[[1]][1]
-	}
-	return (a)
-})
-conditions <- unique(conditions[-which(is.na(conditions))])
+conditions <- levels(classv)
+if(sep.pos=="f"){
+	conditions <- gsub(paste(ULtag,separator,sep=""),"",conditions)[-grep(paste(Ltag,separator,sep=""),conditions)]
+	}else{
+	conditions <- gsub(paste(separator,ULtag,sep=""),"",conditions)[-grep(paste(separator,Ltag,sep=""),conditions)]
+}
+
 
 mass_diff <- L.atomM - UL.atomM
 
