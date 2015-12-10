@@ -14,6 +14,14 @@ xset3 <- group(xset2, mzwid=0.0065, minfrac=0.5, bw= 4)
 source("https://raw.githubusercontent.com/jcapelladesto/geoRge/master/george.R")
 
 s1 <- PuInc_seeker(XCMSet=xset3,ULtag="CELL_Glc12",Ltag="CELL_Glc13",sep.pos="f")
+
 s2 <- basepeak_finder(PuIncR=s1,XCMSet=xset3,ULtag="CELL_Glc12",Ltag="CELL_Glc13",
-											sep.pos="f",UL.atomM=12.0,L.atomM=13.003355,
-											ppm.s=6.5,Basepeak.minInt=2000)
+	sep.pos="f",UL.atomM=12.0,L.atomM=13.003355,
+	ppm.s=6.5,Basepeak.minInt=2000)
+
+negative <- read.table("./adducts_negative.txt",header=T,stringsAsFactors=F)
+db <- read.csv("./ExampleDatabase.csv",header=T,stringsAsFactors=F,fill=T)
+hits <- database_query(geoRgeR = s2, adducts = negative, db = db)
+
+
+
