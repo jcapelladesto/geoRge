@@ -5,14 +5,25 @@
 ## Use XCMS package (https://bioconductor.org/packages/release/bioc/html/xcms.html) for peak picking, alignment and grouping
 
 library(xcms)
-setwd("../MTBLS213/")
 
-xset <- xcmsSet(method="centWave", ppm=30, peakwidth=c(5,20))
-sampclass(xset) <- substring(sampnames(xset), 6, 15)
+recalc=FALSE
 
-xset2 <- retcor(xset,method="obiwarp", profStep=0.1) 
-xset3 <- group(xset2, mzwid=0.0065, minfrac=0.5, bw= 4)
-setwd("../geoRge/")
+if (recalc) {
+    setwd("../MTBLS213/")
+    
+    xset <- xcmsSet(method="centWave", ppm=30, peakwidth=c(5,20))
+    sampclass(xset) <- substring(sampnames(xset), 1, 21)
+
+    xset2 <- retcor(xset,method="obiwarp", profStep=0.1) 
+    xset3 <- group(xset2, mzwid=0.0065, minfrac=0.5, bw= 4)
+    xset3 <- fillPeaks(xset3)
+    setwd("../geoRge/")
+
+    save(xset3, file="mtbls213.Rda")
+
+} else {
+    load("mtbls213.Rda")
+}
 
 ## Parameters such as ppm, peakwidth, mzwid, minfrac and bw are not strict. They depend on data acquisition and methodology.
 ## Please find the best parameters for your own data using your own experience or by trial and error
