@@ -1,3 +1,6 @@
+#' @import xcms
+NULL # This is required so that roxygen knows where the first manpage starts
+
 #' Detect putative Isotope pairs
 #'
 #' @param XCMSet the xcmsSet with labelled and unlabelled samples.

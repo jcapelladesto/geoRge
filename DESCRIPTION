@@ -7,4 +7,6 @@ Author: Jordi Capellades, Miriam Navarro, Sara Samino, Marta Garcia-Ramirez, Cri
 Maintainer: Jordi Capellades <j.capellades.to@gmail.com>
 Description: geoRge: a computational tool for stable isotope labelling detection in LC/MS-based untargeted metabolomics,
   This collection of functions aim to produce an easy-to-read output for non-targeted label tracing metabolomics analysis.
+Imports: xcms
 License: What license is it under?
+LazyData: true

@@ -83,6 +83,6 @@ Analytical Chemistry. 2015.
 }
 \examples{
 data(mtbls213)
-xset3
+mtbls213
 }
 \keyword{datasets}

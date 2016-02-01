@@ -21,15 +21,10 @@ The DESCRIPTION file:
 Maintainer: \packageMaintainer{geoRge}
 }
 \references{
-~~ Literature or other references for background information ~~
+"geoRge: a computational tool for stable isotope labelling detection in LC/MS-based untargeted metabolomics"
+
+Jordi Capellades, Miriam Navarro, Sara Samino, Marta Garcia-Ramirez, Cristina Hernandez, Rafael Simo, Maria Vinaixa and Oscar Yanes
+
+Analytical Chemistry. 2015.
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation ~~
-~~ directory ~~
 \keyword{ package }
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
-\examples{
-~~ simple examples of the most important functions ~~
-}

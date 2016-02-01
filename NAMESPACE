@@ -2,3 +2,4 @@
 
 export(PuInc_seeker)
 export(basepeak_finder)
+import(xcms)

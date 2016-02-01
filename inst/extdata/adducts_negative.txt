@@ -1,0 +1,4 @@
+Adduct	AdductMass
+M-H	1.007276
+M-H2O-H	19.01838976
+M+FA-H	-44.99821
