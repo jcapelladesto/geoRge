@@ -7,6 +7,7 @@ library(xcms)
 xset <- xcmsSet(method="centWave", ppm=30, peakwidth=c(5,20))
 xset2 <- retcor(xset,method="obiwarp", profStep=0.1) 
 xset3 <- group(xset2, mzwid=0.0065, minfrac=0.5, bw= 4)
+xset3 <- fillPeaks(xset3)
 
 ## Parameters such as ppm, peakwidth, mzwid, minfrac and bw are not strict. They depend on data acquisition and methodology.
 ## Please find the best parameters for your own data using your own experience or by trial and error
