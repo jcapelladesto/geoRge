@@ -41,7 +41,7 @@ if (recalc) {
 ## Parameters such as ppm, peakwidth, mzwid, minfrac and bw are not strict. They depend on data acquisition and methodology.
 ## Please find the best parameters for your own data using your own experience or by trial and error
 
-source("../george.R")
+#source("../george.R")
 
 s1 <- PuInc_seeker(XCMSet=xset3,ULtag="CELL_Glc12",Ltag="CELL_Glc13",sep.pos="f")
 

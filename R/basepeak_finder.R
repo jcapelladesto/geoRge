@@ -1,3 +1,23 @@
+#' Detect basepeak of XXX
+#' 
+#' Longer Description of basepeak_finder
+#' @param PuIncR Result of PuInc_seeker
+#' @param XCMSet the xcmsSet with labelled and unlabelled samples.
+#' @param XCMSmode="maxo" Which type of peak intensity to use
+#' @param ULtag part of the samplename for unlabelled sample
+#' @param Ltag part of the samplename for unlabelled sample
+#' @param separator="_" separator in samplename
+#' @param sep.pos unsure.
+#' @param UL.atomM
+#' @param L.atomM
+#' @param ppm.s 
+#' @param rt.win.min
+#' @param Basepeak.minInt
+#' @param Basepeak.Percentage 
+#' @param noise.quant
+#' @return Return basepeak
+#' @export
+
 basepeak_finder <-
 function(PuIncR=NULL, XCMSmode="maxo", XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
 UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, Basepeak.minInt=NULL, Basepeak.Percentage=0.7, noise.quant=0.2,  ...) {

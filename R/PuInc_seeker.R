@@ -1,3 +1,16 @@
+#' Detect putative Isotope pairs
+#'
+#' @param XCMSet the xcmsSet with labelled and unlabelled samples.
+#' @param XCMSmode="maxo" Which type of peak intensity to use
+#' @param ULtag part of the samplename for unlabelled sample
+#' @param Ltag part of the samplename for unlabelled sample
+#' @param separator="_" separator in samplename
+#' @param sep.pos unsure.
+#' @param fc.threshold=1.2 Fold-change threshhold between XXX
+#' @param p.value.threshold=0.05 p-Value threshhold between XXX
+#' @param PuInc.int.lim=5000 Some intensity threshhold
+#' @return Potential Isotope pairs
+#' @export
 PuInc_seeker <-
 function (XCMSet=NULL, XCMSmode="maxo", ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL, fc.threshold=1.2, 
 p.value.threshold=0.05, PuInc.int.lim=5000, ...){
