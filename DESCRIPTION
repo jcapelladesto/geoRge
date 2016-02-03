@@ -1,0 +1,12 @@
+Package: geoRge
+Type: Package
+Title: What the package does (short line)
+Version: 0.1
+Date: 2016-02-01
+Author: Jordi Capellades, Miriam Navarro, Sara Samino, Marta Garcia-Ramirez, Cristina Hernandez, Rafael Simo, Maria Vinaixa and Oscar Yanes
+Maintainer: Jordi Capellades <j.capellades.to@gmail.com>
+Description: geoRge: a computational tool for stable isotope labelling detection in LC/MS-based untargeted metabolomics,
+  This collection of functions aim to produce an easy-to-read output for non-targeted label tracing metabolomics analysis.
+Imports: xcms
+License: What license is it under?
+LazyData: true
