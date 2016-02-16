@@ -44,3 +44,20 @@ hits <- database_query(geoRgeR = s2, adducts = negative, db = db)
 
 ```
 
+
+```{r}
+# The normal script works, but breaks without different conditions. 
+# Check: overwrite mtbls213 contitions
+
+library(xcms)
+library(geoRge)
+data(mtbls213)
+
+sampclass(mtbls213) <- c(rep("CELL_Glc12_05mM_Normo", 6), rep("CELL_Glc13_05mM_Normo", 6))
+s1 <- PuInc_seeker(XCMSet=mtbls213,ULtag="CELL_Glc12",Ltag="CELL_Glc13",sep.pos="f")
+
+s2 <- basepeak_finder(PuIncR=s1,XCMSet=mtbls213,ULtag="CELL_Glc12",Ltag="CELL_Glc13",
+  sep.pos="f",UL.atomM=12.0,L.atomM=13.003355,
+  ppm.s=6.5,Basepeak.minInt=2000)
+
+```
