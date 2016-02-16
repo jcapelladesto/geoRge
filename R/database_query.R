@@ -1,3 +1,12 @@
+#' Find MS features in metabolite database
+#' 
+#' Longer Description of database_query
+#' @param geoRgeR result of XXX
+#' @param adducts list of adducts in the current ion mode
+#' @param db Database in form of a CSV
+#' @param ppm.db=10 default search PPM in Database
+#' @export
+
 database_query <-
 function(geoRgeR=NULL, adducts=NULL, db=NULL, ppm.db=10) {
 
