@@ -14,7 +14,7 @@ To Install from R console:
 install.packages("devtools", dependencies=TRUE)
 library(devtools) 
 
-install_github("capelladesto/geoRge")
+install_github("jcapelladesto/geoRge")
 library(geoRge) 
 ````
 
