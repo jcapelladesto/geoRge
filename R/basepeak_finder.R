@@ -1,20 +1,20 @@
-#' Detect basepeak of XXX
+#' Find the monoisotopic peak of the putative isotopologues detected by PuInc_seeker
 #' 
 #' Longer Description of basepeak_finder
 #' @param PuIncR Result of PuInc_seeker
-#' @param XCMSet the xcmsSet with labelled and unlabelled samples.
-#' @param XCMSmode="maxo" Which type of peak intensity to use
-#' @param ULtag part of the samplename for unlabelled sample
-#' @param Ltag part of the samplename for unlabelled sample
+#' @param XCMSet The xcmsSet with labelled and unlabelled samples
+#' @param XCMSmode="maxo" Type of quantification value for the features, as in `xcms::groupval(XCMSet)`
+#' @param ULtag Unlabelled sample name tag, for example "C12"
+#' @param Ltag Labelled sample name tag, for example "C13"
 #' @param separator="_" separator in samplename
-#' @param sep.pos unsure.
-#' @param UL.atomM
-#' @param L.atomM
-#' @param ppm.s 
-#' @param rt.win.min
-#' @param Basepeak.minInt
-#' @param Basepeak.Percentage 
-#' @param noise.quant
+#' @param sep.pos position of the label/unlabelled tags in phenoData. Check `xcms::sampclass(XCMSet)`
+#' @param UL.atomM Mass of the Unlabelled atom used in labelling experiments
+#' @param L.atomM Mass of the Labelled atom used in labelling experiments
+#' @param ppm.s ppm window to use to search the monoisotopic peak
+#' @param rt.win.min Minimum retention time window in which the isotopologues are expected to coelute
+#' @param Basepeak.minInt Minimum Value for the candidate monoisotopic pea
+#' @param Basepeak.Percentage If more than one high-intensity base peak is found, a percentage of the highest one is used to avoid the assignation of high natural abundant peaks belonging to a monoisotopic peak 
+#' @param noise.quant Expected quantile of peaks to be considered as background noise
 #' @return Return basepeak
 #' @export
 
@@ -63,10 +63,10 @@ Xn <- groupval(XCMSet, value = "sn")
 Dn <- data.frame(t(Xn))
 Dn <- Dn[rownames(D1), ]
 colnames(Dn) <- as.character(1:ncol(Dn))
-meannoise <- apply(Dn, 2, function(x) tapply(x, classv, mean))
+meannoise <- apply(Dn, 2, function(x) tapply(x, classv,mean,na.rm=T)) ### noise change update geoRge
 meannoise[is.na(meannoise)] <- 3 
 mn <- quantile(meannoise, noise.quant, na.rm=T) 
-filtsampsnoise  <- which(apply(meannoise, 2, function(x) any(x > mn))==T)
+filtsampsnoise  <- which(apply(meannoise, 2, function(x) any(x>=mn))==T) ### noise change update geoRge
 
 george <- lapply(rownames(res_inc), function(y) {
 	
@@ -108,14 +108,15 @@ george <- lapply(rownames(res_inc), function(y) {
 		mi <- mi[ ,-which(colnames(mi) == inc)]
 		
 		cond <- sort(unique(unlist(strsplit(as.character(unique(inc_condition)), split=";"))))
+		cond_class <- levels(sampclass(XCMSet)) # changed 1 condition
 		
 		# Solve which of the isotopologues found is the base peak
 		
 		if (is.vector(mi)){ # If there is only 1 base peak candidate
 			
 			pos <- sapply(cond, USE.NAMES=F, simplify=T, function(x) {
-				mi12 <- mi[grep(ULtag, names(mi))]
-				mi12 <- mi12[grep(x, names(mi12))]
+				mi12_idx <- intersect(grep(ULtag,cond_class),grep(x,cond_class))  # changed 1 condition
+				mi12 <- mi[mi12_idx]  # changed 1 condition
 				if ((mi12 > Basepeak.minInt)){
 					pos <- isot.match
 					return(pos)
@@ -129,8 +130,8 @@ george <- lapply(rownames(res_inc), function(y) {
 		} else { # If there is +1 base peak candidates
 			
 			pos <- sapply(cond, USE.NAMES=F, simplify=T, function(x) {
-				mi12 <- mi[grep(ULtag, rownames(mi)), ]
-				mi12 <- mi12[grep(x, rownames(mi12)), ]
+				mi12_idx <- intersect(grep(ULtag,cond_class),grep(x,cond_class)) # changed 1 condition
+				mi12 <- mi[mi12_idx,] # changed 1 condition
 				if (any(mi12 > Basepeak.minInt)) {
 					mi12 <- mi12[which(mi12 > Basepeak.minInt)]
 					pos <- names(which(mi12 > (Basepeak.Percentage*max(mi12))))

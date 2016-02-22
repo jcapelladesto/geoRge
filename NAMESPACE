@@ -3,4 +3,5 @@
 export(PuInc_seeker)
 export(basepeak_finder)
 export(database_query)
+export(label_compare)
 import(xcms)

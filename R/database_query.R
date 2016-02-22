@@ -1,7 +1,7 @@
 #' Find MS features in metabolite database
 #' 
 #' Longer Description of database_query
-#' @param geoRgeR result of XXX
+#' @param geoRgeR result of basepeak_finder
 #' @param adducts list of adducts in the current ion mode
 #' @param db Database in form of a CSV
 #' @param ppm.db=10 default search PPM in Database

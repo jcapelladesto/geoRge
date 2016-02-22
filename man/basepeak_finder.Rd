@@ -2,7 +2,7 @@
 % Please edit documentation in R/basepeak_finder.R
 \name{basepeak_finder}
 \alias{basepeak_finder}
-\title{Detect basepeak of XXX}
+\title{Find the monoisotopic peak of the putative isotopologues detected by PuInc_seeker}
 \usage{
 basepeak_finder(PuIncR = NULL, XCMSmode = "maxo", XCMSet = NULL,
   ULtag = NULL, Ltag = NULL, separator = "_", sep.pos = NULL,
@@ -13,29 +13,29 @@ basepeak_finder(PuIncR = NULL, XCMSmode = "maxo", XCMSet = NULL,
 \arguments{
 \item{PuIncR}{Result of PuInc_seeker}
 
-\item{XCMSet}{the xcmsSet with labelled and unlabelled samples.}
+\item{XCMSet}{The xcmsSet with labelled and unlabelled samples}
 
-\item{ULtag}{part of the samplename for unlabelled sample}
+\item{ULtag}{Unlabelled sample name tag, for example "C12"}
 
-\item{Ltag}{part of the samplename for unlabelled sample}
+\item{Ltag}{Labelled sample name tag, for example "C13"}
 
-\item{sep.pos}{unsure.}
+\item{sep.pos}{position of the label/unlabelled tags in phenoData. Check `xcms::sampclass(XCMSet)`}
 
-\item{UL.atomM}{}
+\item{UL.atomM}{Mass of the Unlabelled atom used in labelling experiments}
 
-\item{L.atomM}{}
+\item{L.atomM}{Mass of the Labelled atom used in labelling experiments}
 
-\item{ppm.s}{}
+\item{ppm.s}{ppm window to use to search the monoisotopic peak}
 
-\item{rt.win.min}{}
+\item{rt.win.min}{Minimum retention time window in which the isotopologues are expected to coelute}
 
-\item{Basepeak.minInt}{}
+\item{Basepeak.minInt}{Minimum Value for the candidate monoisotopic peak}
 
-\item{Basepeak.Percentage}{}
+\item{Basepeak.Percentage}{If more than one high-intensity base peak is found, a percentage of the highest one is used to avoid the assignation of high natural abundant peaks belonging to a monoisotopic peak}
 
-\item{noise.quant}{}
+\item{noise.quant}{Expected quantile of peaks to be considered as background noise}
 
-\item{XCMSmode="maxo"}{Which type of peak intensity to use}
+\item{XCMSmode="maxo"}{Type of quantification value for the features, as in `xcms::groupval(XCMSet)`}
 
 \item{separator="_"}{separator in samplename}
 }

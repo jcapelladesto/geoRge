@@ -3,15 +3,15 @@ NULL # This is required so that roxygen knows where the first manpage starts
 
 #' Detect putative Isotope pairs
 #'
-#' @param XCMSet the xcmsSet with labelled and unlabelled samples.
-#' @param XCMSmode="maxo" Which type of peak intensity to use
-#' @param ULtag part of the samplename for unlabelled sample
-#' @param Ltag part of the samplename for unlabelled sample
+#' @param XCMSet The xcmsSet with labelled and unlabelled samples
+#' @param XCMSmode="maxo" Type of quantification value for the features, as in `xcms::groupval(XCMSet)`
+#' @param ULtag Unlabelled sample name tag, for example "C12"
+#' @param Ltag Labelled sample name tag, for example "C13"
 #' @param separator="_" separator in samplename
-#' @param sep.pos unsure.
-#' @param fc.threshold=1.2 Fold-change threshhold between XXX
-#' @param p.value.threshold=0.05 p-Value threshhold between XXX
-#' @param PuInc.int.lim=5000 Some intensity threshhold
+#' @param sep.pos position of the label/unlabelled tags in phenoData. Check `xcms::sampclass(XCMSet)`
+#' @param fc.threshold=1.2 Fold-change threshold for detection of upregulated features associated to Putative incorporation into isotopologues
+#' @param p.value.threshold=0.05 p-Value threshhold between for detection of upregulated features associated to Putative incorporation into isotopologues
+#' @param PuInc.int.lim=5000 Intensity limit in unlabelled sample for the selection of features to be tested as possible Putative incorporation into isotopologues
 #' @return Potential Isotope pairs
 #' @export
 PuInc_seeker <-
@@ -22,7 +22,7 @@ X1 <- groupval(XCMSet, value = XCMSmode) # geoRge has only been tested on "maxo"
 D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 
-classv <- as.factor(XCMSet@phenoData$class) # sample classes (use separate folders per each group when running XCMS)
+classv <- as.factor(sampclass(XCMSet)) # sample classes (use separate folders per each group when running XCMS or set them before running geoRge)
 
 ##' This is a way to extract the condition classes automatically from the phenoData vector
 ##' 
@@ -43,9 +43,14 @@ if(sep.pos=="f"){
 
 filtsamps <- 1:ncol(D1)
 
-meanintensities <- apply(D1, 2, function(x) tapply(x, classv, mean))
-meanintensities <- meanintensities[grep(ULtag, rownames(meanintensities)), ]
-filtsampsint <- filtsamps[apply(meanintensities, 2, function(x) all(x < PuInc.int.lim))]
+meanintensities <- apply(D1, 2, function(x) tapply(x, classv,mean))
+meanintensities <- as.data.frame(meanintensities[grep(ULtag,rownames(meanintensities)),]) ## changed 1 condition
+
+if (length(conditions)==1){ ## changed 1 condition
+	filtsampsint <- filtsamps[apply(meanintensities, 1, function(x) all(x< PuInc.int.lim))]
+}else{
+	filtsampsint <- filtsamps[apply(meanintensities, 2, function(x) all(x< PuInc.int.lim))]
+}
 
 #### First step: Compare Labelled vs Unlabelled ####
 

@@ -1,5 +1,30 @@
+#' Calculate and compare labelling values between different conditions
+#' 
+#' Longer Description of label_compare
+#' @param geoRgeR result of basepeak_finder
+#' @param XCMSet The xcmsSet with labelled and unlabelled samples
+#' @param XCMSmode="maxo" Type of quantification value for the features, as in `xcms::groupval(XCMSet)`
+#' @param ULtag Unlabelled sample name tag, for example "C12"
+#' @param Ltag Labelled sample name tag, for example "C13"
+#' @param separator="_" separator in samplename
+#' @param sep.pos position of the label/unlabelled tags in phenoData. Check `xcms::sampclass(XCMSet)`
+#' @param UL.atomM Mass of the Unlabelled atom used in labelling experiments
+#' @param L.atomM Mass of the Labelled atom used in labelling experiments
+#' @param ppm.s ppm window to use to search the monoisotopic peak
+#' @param rt.win.min Minimum retention time window in which the isotopologues are expected to coelute
+#' @param Basepeak.minInt Minimum Value for the candidate monoisotopic pea
+#' @param Basepeak.Percentage If more than one high-intensity base peak is found, a percentage of the highest one is used to avoid the assignation of high natural abundant peaks belonging to a monoisotopic peak 
+#' @param noise.quant Expected quantile of peaks to be considered as background noise
+#' @param control.cond Condition tag to be used as reference for the Welch t.test statistics
+#' @param fc.vs.Control=1.0 Default fold-change value to applied to report changes between different conditions
+#' @param p.value.vs.Control=0.05 Default p-value to applied to report changes between different conditions
+#' @param Show.bp Boolean that switches if the monoisotopic labelling percentages should be reported in the output table
+#' @return Return label_comparison
+#' @export
+
+
 label_compare <-
-function(geoRgeR=NULL, XCMSmode="maxo", PuIncR=NULL, XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
+function(geoRgeR=NULL, XCMSSet=NULL, XCMSmode="maxo", PuIncR=NULL, XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
 UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, control.cond=NULL, fc.vs.Control=1, p.value.vs.Control=0.05, Show.bp= T, ...) {
 
 georgedf <- geoRgeR
