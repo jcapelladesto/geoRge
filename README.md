@@ -22,7 +22,9 @@ library(geoRge)
 ## geoRge 1.0 
 
 +__Same functions, less arguments__ I have updated the functions so they are less tiring to use. Check `help(function)` to see the new arguments and function usage
+
 +__New documentation__ Now all functions are properly documented
+
 +__`label_compare()` has been patched__
 
 --------------------------------------------------------------------------------------------------------------------------
