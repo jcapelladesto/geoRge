@@ -79,7 +79,7 @@ http://www.ebi.ac.uk/metabolights/MTBLS213
 
 Jordi Capellades, Miriam Navarro, Sara Samino, Marta Garcia-Ramirez, Cristina Hernandez, Rafael Simo, Maria Vinaixa and Oscar Yanes
 
-Analytical Chemistry. 2015.
+Analytical Chemistry. 2016.
 }
 \examples{
 data(mtbls213)

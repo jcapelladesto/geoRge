@@ -1,53 +1,43 @@
-#' Calculate and compare labelling values between different conditions
+#' Calculate and Compare Labelling Values between Conditions
 #' 
-#' Longer Description of label_compare
-#' @param geoRgeR result of basepeak_finder
+#' Calculate the proportion of labelling of the isotopologues found for each group of features and statistically compare them. If only one condition is available only the labelling proportions are reported
+#' @param geoRgeR Result of basepeak_finder
 #' @param XCMSet The xcmsSet with labelled and unlabelled samples
-#' @param XCMSmode="maxo" Type of quantification value for the features, as in `xcms::groupval(XCMSet)`
-#' @param ULtag Unlabelled sample name tag, for example "C12"
-#' @param Ltag Labelled sample name tag, for example "C13"
-#' @param separator="_" separator in samplename
-#' @param sep.pos position of the label/unlabelled tags in phenoData. Check `xcms::sampclass(XCMSet)`
-#' @param UL.atomM Mass of the Unlabelled atom used in labelling experiments
-#' @param L.atomM Mass of the Labelled atom used in labelling experiments
 #' @param ppm.s ppm window to use to search the monoisotopic peak
 #' @param rt.win.min Minimum retention time window in which the isotopologues are expected to coelute
-#' @param Basepeak.minInt Minimum Value for the candidate monoisotopic pea
-#' @param Basepeak.Percentage If more than one high-intensity base peak is found, a percentage of the highest one is used to avoid the assignation of high natural abundant peaks belonging to a monoisotopic peak 
-#' @param noise.quant Expected quantile of peaks to be considered as background noise
 #' @param control.cond Condition tag to be used as reference for the Welch t.test statistics
-#' @param fc.vs.Control=1.0 Default fold-change value to applied to report changes between different conditions
-#' @param p.value.vs.Control=0.05 Default p-value to applied to report changes between different conditions
+#' @param fc.vs.Control Default fold-change value to applied to report changes between different conditions
+#' @param p.value.vs.Control Default p-value to applied to report changes between different conditions
 #' @param Show.bp Boolean that switches if the monoisotopic labelling percentages should be reported in the output table
-#' @return Return label_comparison
+#' @return Dataframe with results of comparing the enrichment between \code{control.cond} and the rest of conditions
 #' @export
 
-
 label_compare <-
-function(geoRgeR=NULL, XCMSSet=NULL, XCMSmode="maxo", PuIncR=NULL, XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
-UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, control.cond=NULL, fc.vs.Control=1, p.value.vs.Control=0.05, Show.bp= T, ...) {
+function(geoRgeR=NULL, XCMSet=NULL, ppm.s=NULL, rt.win.min=1, control.cond=NULL, fc.vs.Control=1, p.value.vs.Control=0.05, Show.bp= T) {
 
-georgedf <- geoRgeR
+georgedf <- geoRgeR[["geoRge"]]
+puinc_params <- geoRgeR$params
+XCMSmode <- puinc_params$XCMSmode 
+ULtag <- puinc_params$ULtag 
+Ltag <- puinc_params$Ltag 
+UL.atomM <- puinc_params$UL.atomM
+L.atomM <- puinc_params$L.atomM
+separator <- puinc_params$separator
+sep.pos.front <- puinc_params$sep.pos.front 
+conditions <- puinc_params$conditions
 
-X1 <- groupval(XCMSet, value = XCMSmode) # geoRge has only been used on "maxo". I suppose it works for others too.
+X1 <- xcms::groupval(XCMSet, value = XCMSmode) # geoRge has only been used on "maxo". I suppose it works for others too.
 D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 filtsamps <- 1:ncol(D1)
-classv <- as.factor(XCMSet@phenoData$class) # sample classes (use separate folders per group when running XCMS)
+classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate folders per group when running XCMS)
 xgroup <- cbind(XCMSet@groups[filtsamps,c("mzmed", "rtmed")], t(D1))
-
-conditions <- levels(classv)
-if(sep.pos=="f"){
-	conditions <- gsub(paste(ULtag,separator,sep=""),"",conditions)[-grep(paste(Ltag,separator,sep=""),conditions)]
-	}else{
-	conditions <- gsub(paste(separator,ULtag,sep=""),"",conditions)[-grep(paste(separator,Ltag,sep=""),conditions)]
-}
 
 
 mass_diff <- L.atomM - UL.atomM
 
-percent.incorp <- lapply(unique(georgedf$inc_id), function(y) {
-	
+percent.incorp <- lapply(unique(georgedf$inc_id), function(y){
+
 	inc_id_features <- georgedf[which(georgedf$inc_id==y), ] 
 	inc_id_int <- inc_id_features[ ,7:ncol(inc_id_features)]
 	
@@ -78,8 +68,8 @@ percent.incorp <- lapply(unique(georgedf$inc_id), function(y) {
 	all_id_int <- all_id[ ,3:ncol(all_id)] # intensities
 	
 	inc_percent <- sapply(conditions,function(x){
-		inc_id_intL <- inc_id_int[,intersect(grep(Ltag,colnames(inc_id_int)),grep(x,colnames(inc_id_int)))]
-		all_id_intL <- all_id_int[,intersect(grep(Ltag,colnames(all_id_int)),grep(x,colnames(all_id_int)))]
+		inc_id_intL <- inc_id_int[,intersect(grep(Ltag,classv),grep(x,classv))]
+		all_id_intL <- all_id_int[,intersect(grep(Ltag,classv),grep(x,classv))]
 		
 		inc_cal <- sapply(1:ncol(inc_id_intL), function(x) {(inc_id_intL[ ,x] / sum(all_id_intL[ ,x]))*100})
 		return(inc_cal)
@@ -131,7 +121,10 @@ percent.incorp <- lapply(unique(georgedf$inc_id), function(y) {
 		})
 	})
 	
-	comp <- sapply(1:nrow(pvals),function(x) {
+	comp <- rep("",times=length(atoms))
+	
+	if (length(noncontrol)>0){
+		comp <- sapply(1:nrow(pvals),function(x) {
 		t <- which(pvals [x, ] < p.value.vs.Control)
 		if(length(t) == 0) {
 		t <- ""
@@ -157,16 +150,16 @@ percent.incorp <- lapply(unique(georgedf$inc_id), function(y) {
 		comp <- lapply(1:length(comp), function(x) paste(comp[[x]], collapse=";"))
 		comp <- unlist(comp)
 	}
+	}
 	
 	comp[1] <- "Base peak"
 	
 	r <- data.frame("Comparison" = comp, mean_inc, sd_inc)
 	if (!Show.bp) {r[1, ] <- rep("Base Peak", times=ncol(r))}
 	return(r)
-})
+}
+)
 
 percent.incorpdf <- do.call("rbind",percent.incorp)
-
-return(percent.incorpdf)
 
 }

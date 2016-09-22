@@ -1,10 +1,10 @@
-#' Find MS features in metabolite database
+#' Find Monoisotopic Peaks in a Custom Metabolite Database
 #' 
-#' Longer Description of database_query
-#' @param geoRgeR result of basepeak_finder
-#' @param adducts list of adducts in the current ion mode
-#' @param db Database in form of a CSV
-#' @param ppm.db=10 default search PPM in Database
+#' Look for hits for mz of monoisotopic peaks in a database in .CSV format
+#' @param geoRgeR Result of basepeak_finder
+#' @param adducts List of adducts in the current ion mode
+#' @param db Database in .CSV format (see \code{system.file("extdata/ExampleDatabase.csv", package="geoRge")})
+#' @param ppm.db ppm value to search in Database
 #' @export
 
 database_query <-

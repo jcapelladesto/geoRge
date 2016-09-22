@@ -1,28 +1,41 @@
 #' @import xcms
+#' @importClassesFrom Rcpp "C++Object"
 NULL # This is required so that roxygen knows where the first manpage starts
 
-#' Detect putative Isotope pairs
+#' Detect Putative Incorporation features
 #'
-#' @param XCMSet The xcmsSet with labelled and unlabelled samples
-#' @param XCMSmode="maxo" Type of quantification value for the features, as in `xcms::groupval(XCMSet)`
+#' Use Welch's T-test to detect features upregulated in labelled samples
+#' @param XCMSet xcmsSet object of samples processed by xcms workflow
+#' @param XCMSmode Type of quantification value for the features, as in \code{xcms::groupval(XCMSet)}
 #' @param ULtag Unlabelled sample name tag, for example "C12"
 #' @param Ltag Labelled sample name tag, for example "C13"
-#' @param separator="_" separator in samplename
-#' @param sep.pos position of the label/unlabelled tags in phenoData. Check `xcms::sampclass(XCMSet)`
-#' @param fc.threshold=1.2 Fold-change threshold for detection of upregulated features associated to Putative incorporation into isotopologues
-#' @param p.value.threshold=0.05 p-Value threshhold between for detection of upregulated features associated to Putative incorporation into isotopologues
-#' @param PuInc.int.lim=5000 Intensity limit in unlabelled sample for the selection of features to be tested as possible Putative incorporation into isotopologues
-#' @return Potential Isotope pairs
+#' @param separator Character used as separator in sample names, as in \code{xcms::sampclass(XCMSet)}
+#' @param sep.pos.front \code{TRUE} if position of \code{ULtag} and \code{Ltag} is found \emph{previous} to the condition names. Check \code{xcms::sampclass(XCMSet)}
+#' @param fc.threshold Fold-change threshold for detection of upregulated features associated to Putative incorporation 
+#' @param p.value.threshold p-Value threshhold between for detection of upregulated features associated to Putative incorporation
+#' @param PuInc.int.lim Intensity limit in unlabelled sample for the selection of features to be tested as possible Putative incorporation 
+#' @return A list containing: \describe{
+#'   \item{PuInc}{Putative Incorporation Features matrix}
+#'   \item{PuInc_conditions}{Experimetal conditions (as in \code{xcms::sampclass(XCMSet)}) in which PuInc were detected}
+#'   \item{pvalue}{Matrix of p-values from the tested features}
+#'   \item{foldchange}{Matrix of fold-changes from the tested features}  
+#'   \item{params}{Inputed arguments to be inherited by \code{\link{basepeak_finder}}}
+#' }
+#' @examples
+#' data(mtbls213)
+#' xcms::sampclass(mtbls213)
+#' PuInc_seeker(XCMSet=mtbls213,ULtag="CELL_Glc12",Ltag="CELL_Glc13",
+#' sep.pos.front=TRUE ,fc.threshold=1.5,p.value.threshold=.05,	PuInc.int.lim = 4000)
 #' @export
 PuInc_seeker <-
-function (XCMSet=NULL, XCMSmode="maxo", ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL, fc.threshold=1.2, 
-p.value.threshold=0.05, PuInc.int.lim=5000, ...){
+function (XCMSet=NULL, XCMSmode="maxo", ULtag=NULL, Ltag=NULL, separator="_", sep.pos.front=TRUE, fc.threshold=1.2, 
+p.value.threshold=0.05, PuInc.int.lim=NULL){
 
-X1 <- groupval(XCMSet, value = XCMSmode) # geoRge has only been tested on "maxo".
+X1 <- xcms::groupval(XCMSet, value = XCMSmode) # geoRge has only been tested on "maxo".
 D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 
-classv <- as.factor(sampclass(XCMSet)) # sample classes (use separate folders per each group when running XCMS or set them before running geoRge)
+classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate folders per each group when running XCMS or set them before running geoRge)
 
 ##' This is a way to extract the condition classes automatically from the phenoData vector
 ##' 
@@ -35,7 +48,7 @@ classv <- as.factor(sampclass(XCMSet)) # sample classes (use separate folders pe
 ##' Any suggestions are welcome. 
 
 conditions <- levels(classv)
-if(sep.pos=="f"){
+if(sep.pos.front){
 	conditions <- gsub(paste(ULtag,separator,sep=""),"",conditions)[-grep(paste(Ltag,separator,sep=""),conditions)]
 	}else{
 	conditions <- gsub(paste(separator,ULtag,sep=""),"",conditions)[-grep(paste(separator,Ltag,sep=""),conditions)]
@@ -106,6 +119,7 @@ compinc <- sapply(1:nrow(pvalues),function(x) {
 }
 })
 
+
 compinc <- lapply(1:length(compinc), function(x) paste(compinc[[x]], collapse=";"))
 compinc <- unlist(compinc)
 names(compinc) <- colnames(D1[ ,filtsampsint])
@@ -115,6 +129,8 @@ res_inc <- XCMSet@groups[as.numeric(names(compinc)), c("mzmed", "rtmed", "rtmin"
 rownames(res_inc) <- 1:nrow(res_inc)
 
 return(
-list("PuInc"=res_inc, "PuInc_conditions"=compinc, "pvalue"=pvalues, "foldchange"=fc.test)
+list("PuInc"=res_inc, "PuInc_conditions"=compinc, "pvalue"=pvalues, "foldchange"=fc.test,
+		 "params" = list("XCMSmode"=XCMSmode, "ULtag"=ULtag, "Ltag"=Ltag, "separator"=separator,
+		 											"sep.pos.front"=sep.pos.front,"conditions"=conditions))
 )
 }

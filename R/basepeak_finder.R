@@ -1,36 +1,40 @@
-#' Find the monoisotopic peak of the putative isotopologues detected by PuInc_seeker
+#' Find Monoisotopic Peaks for enriched features
 #' 
-#' Longer Description of basepeak_finder
+#' Find the monoisotopic peak of the putative isotopologues detected by PuInc_seeker()
 #' @param PuIncR Result of PuInc_seeker
 #' @param XCMSet The xcmsSet with labelled and unlabelled samples
-#' @param XCMSmode="maxo" Type of quantification value for the features, as in `xcms::groupval(XCMSet)`
-#' @param ULtag Unlabelled sample name tag, for example "C12"
-#' @param Ltag Labelled sample name tag, for example "C13"
-#' @param separator="_" separator in samplename
-#' @param sep.pos position of the label/unlabelled tags in phenoData. Check `xcms::sampclass(XCMSet)`
 #' @param UL.atomM Mass of the Unlabelled atom used in labelling experiments
 #' @param L.atomM Mass of the Labelled atom used in labelling experiments
 #' @param ppm.s ppm window to use to search the monoisotopic peak
 #' @param rt.win.min Minimum retention time window in which the isotopologues are expected to coelute
-#' @param Basepeak.minInt Minimum Value for the candidate monoisotopic pea
+#' @param Basepeak.minInt Minimum value of intensity/Area for the candidate to be a candidate monoisotopic peak
 #' @param Basepeak.Percentage If more than one high-intensity base peak is found, a percentage of the highest one is used to avoid the assignation of high natural abundant peaks belonging to a monoisotopic peak 
 #' @param noise.quant Expected quantile of peaks to be considered as background noise
-#' @return Return basepeak
+#' @return A list containing: \describe{
+#' \item{geoRge}{Dataframe containing results for features for which a base peak was found}
+#' \item{params}{Inputed arguments to be inherited by \code{\link{label_compare}}} 
+#' } 
 #' @export
 
 basepeak_finder <-
-function(PuIncR=NULL, XCMSmode="maxo", XCMSet=NULL, ULtag=NULL, Ltag=NULL, separator="_", sep.pos=NULL,
-UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, Basepeak.minInt=NULL, Basepeak.Percentage=0.7, noise.quant=0.2,  ...) {
+function(PuIncR=NULL, XCMSet=NULL, UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, Basepeak.minInt=NULL, Basepeak.Percentage=0.7, noise.quant=0.0) {
 
-X1 <- groupval(XCMSet, value = XCMSmode) # geoRge has only been used on "maxo". I suppose it works for others too.
+res_inc <- PuIncR[["PuInc"]]
+compinc <- PuIncR[["PuInc_conditions"]]
+puinc_params  <- PuIncR[["params"]]
+XCMSmode <- puinc_params$XCMSmode 
+ULtag <- puinc_params$ULtag 
+Ltag <- puinc_params$Ltag 
+separator <- puinc_params$separator
+sep.pos.front <- puinc_params$sep.pos.front 
+conditions <- puinc_params$conditions 
+
+X1 <- xcms::groupval(XCMSet, value = XCMSmode) # geoRge has only been used on "maxo". I suppose it works for others too.
 D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 filtsamps <- 1:ncol(D1)
 
-classv <- as.factor(XCMSet@phenoData$class) # sample classes (use separate folders per group when running XCMS)
-
-res_inc <- PuIncR[["PuInc"]]
-compinc <- PuIncR[["PuInc_conditions"]]
+classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate folders per group when running XCMS)
 
 #### Second step: Seek the base peaks for each putative incorporation ####
 
@@ -59,7 +63,7 @@ xgroup <- cbind(XCMSet@groups[filtsamps, c("mzmed", "rtmed")], t(D1))
 mass_diff <- L.atomM - UL.atomM
 
 ## Signal-to-noise filtering
-Xn <- groupval(XCMSet, value = "sn") 
+Xn <- xcms::groupval(XCMSet, value = "sn") 
 Dn <- data.frame(t(Xn))
 Dn <- Dn[rownames(D1), ]
 colnames(Dn) <- as.character(1:ncol(Dn))
@@ -212,5 +216,10 @@ georgedf <- do.call("rbind",george) # This should be a data.frame with 6 + Numbe
 ##' Column 5 (atoms):Number of atoms labelled in the feature 
 ##' Column 6 (inc_condition): Sample condition where the incorporation was detected.
 ##' 						If it was detected in more than one condition, they are separated by ";".
-return(georgedf)
+##' 					
+
+puinc_params <- append(puinc_params, values = list("UL.atomM"=UL.atomM, "L.atomM"=L.atomM))
+
+return(list("geoRge" = georgedf,
+			 		 "params" = puinc_params))
 }
