@@ -25,7 +25,7 @@ library(geoRge)
 
 + __New documentation__ Now all functions are properly documented
 
-+ __`label_compare()` has been patched__
++ __`label_compare()`__ has been patched
 
 --------------------------------------------------------------------------------------------------------------------------
 If you have any problem, please raise an issue ticket (https://github.com/jcapelladesto/geoRge/issues). 
