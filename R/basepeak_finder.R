@@ -71,6 +71,8 @@ meannoise <- apply(Dn, 2, function(x) tapply(x, classv,mean,na.rm=T)) ### noise 
 meannoise[is.na(meannoise)] <- 3 
 mn <- quantile(meannoise, noise.quant, na.rm=T) 
 filtsampsnoise  <- which(apply(meannoise, 2, function(x) any(x>=mn))==T) ### noise change update geoRge
+cond_class <- levels(sampclass(XCMSet)) # changed 1 condition
+cond_class_split <- sapply(cond_class,function(x){strsplit(x,split=separator)[[1]][1]})
 
 george <- lapply(rownames(res_inc), function(y) {
 	
@@ -112,14 +114,12 @@ george <- lapply(rownames(res_inc), function(y) {
 		mi <- mi[ ,-which(colnames(mi) == inc)]
 		
 		cond <- sort(unique(unlist(strsplit(as.character(unique(inc_condition)), split=";"))))
-		cond_class <- levels(sampclass(XCMSet)) # changed 1 condition
-		
 		# Solve which of the isotopologues found is the base peak
 		
 		if (is.vector(mi)){ # If there is only 1 base peak candidate
 			
 			pos <- sapply(cond, USE.NAMES=F, simplify=T, function(x) {
-				mi12_idx <- intersect(grep(ULtag,cond_class),grep(x,cond_class))  # changed 1 condition
+				mi12_idx <- intersect(grep(ULtag,cond_class),which(cond_class_split==x))  # changed 1 condition
 				mi12 <- mi[mi12_idx]  # changed 1 condition
 				if ((mi12 > Basepeak.minInt)){
 					pos <- isot.match
@@ -134,7 +134,7 @@ george <- lapply(rownames(res_inc), function(y) {
 		} else { # If there is +1 base peak candidates
 			
 			pos <- sapply(cond, USE.NAMES=F, simplify=T, function(x) {
-				mi12_idx <- intersect(grep(ULtag,cond_class),grep(x,cond_class)) # changed 1 condition
+				mi12_idx <- intersect(grep(ULtag,cond_class),which(cond_class_split==x)) # changed 1 condition
 				mi12 <- mi[mi12_idx,] # changed 1 condition
 				if (any(mi12 > Basepeak.minInt)) {
 					mi12 <- mi12[which(mi12 > Basepeak.minInt)]
