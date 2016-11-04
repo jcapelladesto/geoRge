@@ -39,7 +39,7 @@ classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate fold
 cond_class_split <- sapply(as.character(classv),function(x){
 	pos <- 1
 	if(sep.pos.front){pos <- pos+1}
-	strsplit(x,split="-")[[1]][pos]})
+	strsplit(x,split=separator)[[1]][pos]})
 ##' This is a way to extract the condition classes automatically from the phenoData vector
 ##' 
 ##' At the moment it requires that the sample classes have a structure like this:
