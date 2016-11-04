@@ -36,7 +36,7 @@ D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 
 classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate folders per each group when running XCMS or set them before running geoRge)
-
+cond_class_split <- sapply(classv,function(x){strsplit(x,split=separator)
 ##' This is a way to extract the condition classes automatically from the phenoData vector
 ##' 
 ##' At the moment it requires that the sample classes have a structure like this:
@@ -70,8 +70,8 @@ if (length(conditions)==1){ ## changed 1 condition
 # Welch's test
 pvalues <- sapply(conditions, function(y) {
   apply(D1[ ,filtsampsint], 2, function (x) {
-    a <- try(t.test(x[intersect(grep(ULtag,classv),grep(y,classv))],
-                    x[intersect(grep(Ltag,classv),grep(y,classv))], var.equal=F)$p.value, silent=T)
+    a <- try(t.test(x[intersect(grep(Ltag,cond_class),which(cond_class_split==x))],
+                    x[intersect(grep(ULtag,cond_class),which(cond_class_split==x))], var.equal=F)$p.value, silent=T)
     if (is(a, "try-error")|is.na(a)) {a <- 1}
     return(a)
   })
@@ -82,8 +82,8 @@ colnames(pvalues) <- conditions
 # Fold change (This fold-change calculation is not commonly used*)
 fc.test <- sapply(conditions, function(y) {
   apply(D1[ ,filtsampsint], 2, function (x) { 
-    ulm <- mean(x[intersect(grep(ULtag,classv),grep(y,classv))])
-    labm <- mean(x[intersect(grep(Ltag,classv),grep(y,classv))]) 
+    ulm <- mean(x[intersect(grep(ULtag,cond_class),which(cond_class_split==x))])
+    labm <- mean(x[intersect(grep(Ltag,cond_class),which(cond_class_split==x))]) 
     FC <- labm/ulm
     FC2 <- (-(ulm/labm))
     FC[FC<1] <- FC2[FC<1]
@@ -131,6 +131,6 @@ rownames(res_inc) <- 1:nrow(res_inc)
 return(
 list("PuInc"=res_inc, "PuInc_conditions"=compinc, "pvalue"=pvalues, "foldchange"=fc.test,
 		 "params" = list("XCMSmode"=XCMSmode, "ULtag"=ULtag, "Ltag"=Ltag, "separator"=separator,
-		 											"sep.pos.front"=sep.pos.front,"conditions"=conditions))
+		 "sep.pos.front"=sep.pos.front,"conditions"=conditions))
 )
 }
