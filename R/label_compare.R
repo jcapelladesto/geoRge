@@ -31,6 +31,7 @@ D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 filtsamps <- 1:ncol(D1)
 classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate folders per group when running XCMS)
+cond_class_split <- sapply(classv,function(x){strsplit(x,split=separator)
 xgroup <- cbind(XCMSet@groups[filtsamps,c("mzmed", "rtmed")], t(D1))
 
 
@@ -68,8 +69,8 @@ percent.incorp <- lapply(unique(georgedf$inc_id), function(y){
 	all_id_int <- all_id[ ,3:ncol(all_id)] # intensities
 	
 	inc_percent <- sapply(conditions,function(x){
-		inc_id_intL <- inc_id_int[,intersect(grep(Ltag,classv),grep(x,classv))]
-		all_id_intL <- all_id_int[,intersect(grep(Ltag,classv),grep(x,classv))]
+		inc_id_intL <- inc_id_int[,intersect(grep(Ltag,cond_class),which(cond_class_split==x))]
+		all_id_intL <- all_id_int[,intersect(grep(Ltag,cond_class),which(cond_class_split==x))]
 		
 		inc_cal <- sapply(1:ncol(inc_id_intL), function(x) {(inc_id_intL[ ,x] / sum(all_id_intL[ ,x]))*100})
 		return(inc_cal)
