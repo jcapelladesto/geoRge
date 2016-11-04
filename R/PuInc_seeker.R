@@ -36,7 +36,7 @@ D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 
 classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate folders per each group when running XCMS or set them before running geoRge)
-cond_class_split <- sapply(classv,function(x){strsplit(x,split=separator)})
+cond_class_split <- sapply(classv,function(x){strsplit(x,split=separator)[[1]][1]})
 ##' This is a way to extract the condition classes automatically from the phenoData vector
 ##' 
 ##' At the moment it requires that the sample classes have a structure like this:
