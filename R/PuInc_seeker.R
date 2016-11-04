@@ -73,8 +73,8 @@ if (length(conditions)==1){ ## changed 1 condition
 # Welch's test
 pvalues <- sapply(conditions, function(y) {
   apply(D1[ ,filtsampsint], 2, function (x) {
-    a <- try(t.test(x[intersect(grep(Ltag,classv),which(cond_class_split==x))],
-                    x[intersect(grep(ULtag,classv),which(cond_class_split==x))], var.equal=F)$p.value, silent=T)
+    a <- try(t.test(x[intersect(grep(Ltag,classv),which(cond_class_split==y))],
+                    x[intersect(grep(ULtag,classv),which(cond_class_split==y))], var.equal=F)$p.value, silent=T)
     if (is(a, "try-error")|is.na(a)) {a <- 1}
     return(a)
   })
@@ -85,8 +85,8 @@ colnames(pvalues) <- conditions
 # Fold change (This fold-change calculation is not commonly used*)
 fc.test <- sapply(conditions, function(y) {
   apply(D1[ ,filtsampsint], 2, function (x) { 
-    ulm <- mean(x[intersect(grep(ULtag,classv),which(cond_class_split==x))])
-    labm <- mean(x[intersect(grep(Ltag,classv),which(cond_class_split==x))]) 
+    ulm <- mean(x[intersect(grep(ULtag,classv),which(cond_class_split==y))])
+    labm <- mean(x[intersect(grep(Ltag,classv),which(cond_class_split==y))]) 
     FC <- labm/ulm
     FC2 <- (-(ulm/labm))
     FC[FC<1] <- FC2[FC<1]
