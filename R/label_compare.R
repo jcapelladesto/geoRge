@@ -31,7 +31,7 @@ D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 filtsamps <- 1:ncol(D1)
 classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate folders per group when running XCMS)
-cond_class_split <- sapply(classv,function(x){strsplit(x,split=separator)
+cond_class_split <- sapply(classv,function(x){strsplit(x,split=separator)})
 xgroup <- cbind(XCMSet@groups[filtsamps,c("mzmed", "rtmed")], t(D1))
 
 
