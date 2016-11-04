@@ -75,7 +75,7 @@ cond_class <- levels(sampclass(XCMSet)) # changed 1 condition
 cond_class_split <- sapply(as.character(cond_class),function(x){
 	pos <- 1
 	if(sep.pos.front){pos <- pos+1}
-	strsplit(x,split="-")[[1]][pos]})
+	strsplit(x,split=separator)[[1]][pos]})
 
 george <- lapply(rownames(res_inc), function(y) {
 	
