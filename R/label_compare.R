@@ -34,7 +34,7 @@ classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate fold
 cond_class_split <- sapply(as.character(classv),function(x){
 	pos <- 1
 	if(sep.pos.front){pos <- pos+1}
-	strsplit(x,split="-")[[1]][pos]})
+	strsplit(x,split=separator)[[1]][pos]})
 xgroup <- cbind(XCMSet@groups[filtsamps,c("mzmed", "rtmed")], t(D1))
 
 
