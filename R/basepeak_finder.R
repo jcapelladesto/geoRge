@@ -72,7 +72,10 @@ meannoise[is.na(meannoise)] <- 3
 mn <- quantile(meannoise, noise.quant, na.rm=T) 
 filtsampsnoise  <- which(apply(meannoise, 2, function(x) any(x>=mn))==T) ### noise change update geoRge
 cond_class <- levels(sampclass(XCMSet)) # changed 1 condition
-cond_class_split <- sapply(cond_class,function(x){strsplit(x,split=separator)[[1]][1]})
+cond_class_split <- sapply(as.character(cond_class),function(x){
+	pos <- 1
+	if(sep.pos.front){pos <- pos+1}
+	strsplit(x,split="-")[[1]][pos]})
 
 george <- lapply(rownames(res_inc), function(y) {
 	
