@@ -10,7 +10,7 @@
 database_query <-
 function(geoRgeR=NULL, adducts=NULL, db=NULL, ppm.db=10) {
 
-georgedf <- geoRgeR
+georgedf <- geoRgeR$geoRge
 #### search base peaks in a database ####
 
 ##' This function requires having a database that can be read in R as a data frame. Also
