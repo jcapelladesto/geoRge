@@ -36,10 +36,6 @@ D1 <- data.frame(t(X1))
 colnames(D1) <- as.character(1:nrow(X1))
 
 classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate folders per each group when running XCMS or set them before running geoRge)
-cond_class_split <- sapply(as.character(classv),function(x){
-	pos <- 1
-	if(sep.pos.front){pos <- pos+1}
-	strsplit(x,split=separator)[[1]][pos]})
 ##' This is a way to extract the condition classes automatically from the phenoData vector
 ##' 
 ##' At the moment it requires that the sample classes have a structure like this:
@@ -73,8 +69,8 @@ if (length(conditions)==1){ ## changed 1 condition
 # Welch's test
 pvalues <- sapply(conditions, function(y) {
   apply(D1[ ,filtsampsint], 2, function (x) {
-    a <- try(t.test(x[intersect(grep(Ltag,classv),which(cond_class_split==y))],
-                    x[intersect(grep(ULtag,classv),which(cond_class_split==y))], var.equal=F)$p.value, silent=T)
+    a <- try(t.test(x[intersect(grep(Ltag,classv),grep(y,classv))],
+                    x[intersect(grep(ULtag,classv),grep(y,classv))], var.equal=F)$p.value, silent=T)
     if (is(a, "try-error")|is.na(a)) {a <- 1}
     return(a)
   })
@@ -85,8 +81,8 @@ colnames(pvalues) <- conditions
 # Fold change (This fold-change calculation is not commonly used*)
 fc.test <- sapply(conditions, function(y) {
   apply(D1[ ,filtsampsint], 2, function (x) { 
-    ulm <- mean(x[intersect(grep(ULtag,classv),which(cond_class_split==y))])
-    labm <- mean(x[intersect(grep(Ltag,classv),which(cond_class_split==y))]) 
+    ulm <- mean(x[intersect(grep(ULtag,classv),grep(y,classv))])
+    labm <- mean(x[intersect(grep(Ltag,classv),grep(y,classv))]) 
     FC <- labm/ulm
     FC2 <- (-(ulm/labm))
     FC[FC<1] <- FC2[FC<1]
