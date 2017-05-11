@@ -68,8 +68,8 @@ percent.incorp <- lapply(unique(georgedf$inc_id), function(y){
 	all_id_int <- all_id[ ,3:ncol(all_id)] # intensities
 	
 	inc_percent <- sapply(conditions,function(x){
-		inc_id_intL <- inc_id_int[,intersect(grep(Ltag,classv),grep(y,classv))]
-		all_id_intL <- all_id_int[,intersect(grep(Ltag,classv),grep(y,classv))]
+		inc_id_intL <- inc_id_int[,intersect(grep(Ltag,classv),grep(x,classv))]
+		all_id_intL <- all_id_int[,intersect(grep(Ltag,classv),grep(x,classv))]
 		
 		inc_cal <- sapply(1:ncol(inc_id_intL), function(x) {(inc_id_intL[ ,x] / sum(all_id_intL[ ,x]))*100})
 		return(inc_cal)
