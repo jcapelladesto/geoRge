@@ -33,7 +33,6 @@ filtsamps <- 1:ncol(D1)
 classv <- as.factor(xcms::sampclass(XCMSet)) # sample classes (use separate folders per group when running XCMS)
 xgroup <- cbind(XCMSet@groups[filtsamps,c("mzmed", "rtmed")], t(D1))
 
-
 mass_diff <- L.atomM - UL.atomM
 
 percent.incorp <- lapply(unique(georgedf$inc_id), function(y){
@@ -96,7 +95,15 @@ percent.incorp <- lapply(unique(georgedf$inc_id), function(y){
 		})
 	})
 	colnames(sd_inc) <- paste0(colnames(sd_inc), "_SD")
-	
+	return(list(data.frame(mean_inc,sd_inc),inc_percent))
+})
+names(percent.incorp) <- unique(georgedf$inc_id)
+
+percent.test <- lapply( unique(georgedf$inc_id),function(x){
+	inc_percent <- percent.incorp[[x]][[2]]
+	mean_inc <-  percent.incorp[[x]][[1]][,1:ncol(inc_percent)]
+	inc_id_features <- georgedf[which(georgedf$inc_id==x), ] 
+	atoms <- inc_id_features$atoms
 	noncontrol <- setdiff(conditions, control.cond)
 	
 	pvals <- sapply(noncontrol, function (x) {
@@ -154,12 +161,21 @@ percent.incorp <- lapply(unique(georgedf$inc_id), function(y){
 	
 	comp[1] <- "Base peak"
 	
-	r <- data.frame("Comparison" = comp, mean_inc, sd_inc)
-	if (!Show.bp) {r[1, ] <- rep("Base Peak", times=ncol(r))}
-	return(r)
-}
-)
+	colnames(pvals) <- paste0(colnames(pvals),"_pvaluevs",control.cond)
+	colnames(fct) <- paste0(colnames(fct),"_foldchangevs",control.cond)
+	stats_res <- data.frame(comp,pvals,fct)
+	return(stats_res)
 
-percent.incorpdf <- do.call("rbind",percent.incorp)
+})
 
+percent.res <- lapply(1:length(percent.test),function(x){
+	res <- data.frame(percent.test[[x]],percent.incorp[[x]][[1]])
+	colnames(res)[1] <- "Comparison"
+	if (!Show.bp) {res[1, ] <- rep("Base Peak", times=ncol(res))}
+	return(res)
+})
+	
+percent.incorpdf <- do.call("rbind",percent.res)
+
+return(percent.incorpdf)
 }
