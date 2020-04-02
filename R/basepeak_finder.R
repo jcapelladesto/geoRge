@@ -81,7 +81,8 @@ george <- lapply(rownames(res_inc), function(y) {
 	
 	# Set retention time window
 	rt_d <- (res_inc[y, "rtmax"]-res_inc[y, "rtmin"])
-	if (rt_d<rt.win.min) {rt_d <- rt.win.min}
+	rt_d <- rt.win.min #patch 02/04/2020
+	#if (rt_d<rt.win.min) {rt_d <- rt.win.min}
 	rt_range <- c(res_inc[y, "rtmed"] - rt_d, res_inc[y, "rtmed"] + rt_d)
 	
 	# Search isotopologues in feature matrix
