@@ -185,7 +185,7 @@ george <- lapply(rownames(res_inc), function(y) {
 				})
 				res <- do.call("rbind", r)
 				rownames(res) <- NULL
-				return(res)
+				# return(res)
 				
 			} else { # One feature can be considered a base peak
 				
@@ -201,8 +201,27 @@ george <- lapply(rownames(res_inc), function(y) {
 				res <- cbind(as.data.frame(inc_id),as.data.frame(feature_id),iso_int[,1:2],as.data.frame(atoms),
 								 as.data.frame(inc_condition),iso_int[,-(1:2)])
 				rownames(res) <- NULL
-				return(res)
+				# return(res)
 			}
+			if(any(duplicated(res$atoms))){
+			  dup <- unique(res$atoms[which(duplicated(res$atoms))])
+			  for(i in dup){
+			    iix <- which(res$atoms==i)
+			    temp <- res[iix,]
+			    if(sum(temp$inc_condition!="")==1){
+			      j <- which(temp$inc_condition=="")
+			      j <- iix[j]
+			      res <- res[-j,]
+			    }else{
+			      mz0 <- (res$mzmed[1]+(mass_diff*dup))
+			      ppmerr <- abs(temp$mzmed-mz0)*1e6/mz0
+			      j <- (1:length(ppmerr))[-which.min(ppmerr)]
+			      j <- iix[j]
+			      res <- res[-j,]
+			    }
+			  }
+			}
+			return(res)
 		}
 	}
 }
