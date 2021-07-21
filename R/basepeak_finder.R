@@ -122,7 +122,7 @@ george <- lapply(rownames(res_inc), function(y) {
 			pos <- sapply(cond, USE.NAMES=F, simplify=T, function(x) {
 				mi12_idx <- intersect(grep(ULtag,cond_class),grep(x,cond_class))  # changed 1 condition
 				mi12 <- mi[mi12_idx]  # changed 1 condition
-				if ((mi12 > Basepeak.minInt)){
+				if (any(mi12 > Basepeak.minInt)){
 					pos <- isot.match
 					return(pos)
 				} else {
