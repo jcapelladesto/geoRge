@@ -17,7 +17,8 @@
 #' @export
 
 basepeak_finder <-
-function(PuIncR=NULL, XCMSet=NULL, UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL, rt.win.min=1, Basepeak.minInt=NULL, Basepeak.Percentage=0.7, noise.quant=0.0) {
+function(PuIncR=NULL, XCMSet=NULL, UL.atomM=NULL, L.atomM=NULL, ppm.s=NULL,
+         rt.win.min=1, Basepeak.minInt=NULL, Basepeak.Percentage=0.7, noise.quant=0.0) {
 
 res_inc <- PuIncR[["PuInc"]]
 compinc <- PuIncR[["PuInc_conditions"]]
@@ -181,6 +182,24 @@ george <- lapply(rownames(res_inc), function(y) {
 					res <- cbind(as.data.frame(inc_id),as.data.frame(feature_id),iso_int[,1:2],as.data.frame(atoms),
 							as.data.frame(inc_condition),iso_int[,-(1:2)])
 					rownames(res) <- NULL
+					if(any(duplicated(res$atoms))){
+					    dup <- unique(res$atoms[which(duplicated(res$atoms))])
+					    for(i in dup){
+					        iix <- which(res$atoms==i)
+					        temp <- res[iix,]
+					        if(sum(temp$inc_condition!="")==1){
+					            j <- which(temp$inc_condition=="")
+					            j <- iix[j]
+					            res <- res[-j,]
+					        }else{
+					            mz0 <- (res$mzmed[1]+(mass_diff*dup))
+					            ppmerr <- abs(temp$mzmed-mz0)*1e6/mz0
+					            j <- (1:length(ppmerr))[-which.min(ppmerr)]
+					            j <- iix[j]
+					            res <- res[-j,]
+					        }
+					    }
+					}
 					return(res)
 				})
 				res <- do.call("rbind", r)
@@ -202,25 +221,43 @@ george <- lapply(rownames(res_inc), function(y) {
 								 as.data.frame(inc_condition),iso_int[,-(1:2)])
 				rownames(res) <- NULL
 				# return(res)
+				if(any(duplicated(res$atoms))){
+				    dup <- unique(res$atoms[which(duplicated(res$atoms))])
+				    for(i in dup){
+				        iix <- which(res$atoms==i)
+				        temp <- res[iix,]
+				        if(sum(temp$inc_condition!="")==1){
+				            j <- which(temp$inc_condition=="")
+				            j <- iix[j]
+				            res <- res[-j,]
+				        }else{
+				            mz0 <- (res$mzmed[1]+(mass_diff*dup))
+				            ppmerr <- abs(temp$mzmed-mz0)*1e6/mz0
+				            j <- (1:length(ppmerr))[-which.min(ppmerr)]
+				            j <- iix[j]
+				            res <- res[-j,]
+				        }
+				    }
+				}
 			}
-			if(any(duplicated(res$atoms))){
-			  dup <- unique(res$atoms[which(duplicated(res$atoms))])
-			  for(i in dup){
-			    iix <- which(res$atoms==i)
-			    temp <- res[iix,]
-			    if(sum(temp$inc_condition!="")==1){
-			      j <- which(temp$inc_condition=="")
-			      j <- iix[j]
-			      res <- res[-j,]
-			    }else{
-			      mz0 <- (res$mzmed[1]+(mass_diff*dup))
-			      ppmerr <- abs(temp$mzmed-mz0)*1e6/mz0
-			      j <- (1:length(ppmerr))[-which.min(ppmerr)]
-			      j <- iix[j]
-			      res <- res[-j,]
-			    }
-			  }
-			}
+			# if(any(duplicated(res$atoms))){
+			#   dup <- unique(res$atoms[which(duplicated(res$atoms))])
+			#   for(i in dup){
+			#     iix <- which(res$atoms==i)
+			#     temp <- res[iix,]
+			#     if(sum(temp$inc_condition!="")==1){
+			#       j <- which(temp$inc_condition=="")
+			#       j <- iix[j]
+			#       res <- res[-j,]
+			#     }else{
+			#       mz0 <- (res$mzmed[1]+(mass_diff*dup))
+			#       ppmerr <- abs(temp$mzmed-mz0)*1e6/mz0
+			#       j <- (1:length(ppmerr))[-which.min(ppmerr)]
+			#       j <- iix[j]
+			#       res <- res[-j,]
+			#     }
+			#   }
+			# }
 			return(res)
 		}
 	}
