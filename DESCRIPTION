@@ -1,13 +1,13 @@
 Package: geoRge
 Type: Package
 Title: Isotopic label tracking for untargeted metabolomics
-Version: 1.0
+Version: 1.9
 Date: 2016-04-19
 Author: Jordi Capellades, Miriam Navarro, Sara Samino, Marta Garcia-Ramirez, Cristina Hernandez, Rafael Simo, Maria Vinaixa and Oscar Yanes. (And valuable help from Steffen Neumann)
 Maintainer: Jordi Capellades <j.capellades.to@gmail.com>
 Description: Detection of putative isotopologues using statistics followed by recursive searching of the corresponding monoisotopic peaks.
 License: GPL
-Imports: xcms
+Imports: xcms, MSnbase
 Depends: R (>= 3.0.0), Rcpp
 LazyData: true
-
+RoxygenNote: 7.1.1

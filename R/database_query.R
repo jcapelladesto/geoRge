@@ -11,13 +11,13 @@ database_query <-
 function(geoRgeR=NULL, adducts=NULL, db=NULL, ppm.db=10) {
 
 georgedf <- geoRgeR$geoRge
-#### search base peaks in a database ####
+# search base peaks in a database #
 
-##' This function requires having a database that can be read in R as a data frame. Also
-##' geoRge provides txt files (that are read as data frame) with the adducts masses that 
-##' is used for 'adducts' argument. The 'db' data frame must contain at least 2 columns:
-##' Name
-##' Monoisotopic.Mass
+# This function requires having a database that can be read in R as a data frame. Also
+# geoRge provides txt files (that are read as data frame) with the adducts masses that 
+# is used for 'adducts' argument. The 'db' data frame must contain at least 2 columns:
+# Name
+# Monoisotopic.Mass
 
 ## Function to perform the search
 DatabaseSearch <- function(input, db, ppm.db, adducts) {
